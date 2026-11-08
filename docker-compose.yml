@@ -1,0 +1,31 @@
+services:
+  ferrari-cockpit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ferrari-virtual-cockpit:latest
+    container_name: ferrari-virtual-cockpit
+    restart: unless-stopped
+    ports:
+      - "5013:5013"
+    environment:
+      - TZ=Asia/Jakarta
+      - PORT=5013
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-E058VA970PLY1X2NY8ME}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-wjMsNEvVUGIUdwPCVpB6g1KkGaoplZOA+J127+C9}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+      - AWS_BUCKET=${AWS_BUCKET:-car-simulator}
+      - AWS_USE_PATH_STYLE_ENDPOINT=${AWS_USE_PATH_STYLE_ENDPOINT:-true}
+      - AWS_ENDPOINT=${AWS_ENDPOINT:-http://100.88.163.2:9000}
+      - AWS_URL=${AWS_URL:-http://100.88.163.2:9000/smart-sdmk}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:5013/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
